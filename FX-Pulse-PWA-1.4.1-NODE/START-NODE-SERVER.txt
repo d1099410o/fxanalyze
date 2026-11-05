@@ -1,0 +1,39 @@
+FX PULSE 1.4.1 — URUCHOMIENIE SERWERA NODE.JS
+
+WINDOWS
+1. Zainstaluj Node.js 22 LTS (minimum Node.js 20): https://nodejs.org/
+2. Rozpakuj caly folder projektu.
+3. Dwukrotnie kliknij START-FXPULSE-WINDOWS.bat.
+4. Poczekaj na komunikat SERVER SMOKE TEST: PASS.
+5. Otworz w przegladarce http://localhost:3000.
+6. Nie zamykaj okna terminala — to ono utrzymuje serwer. Ctrl+C zatrzymuje serwer.
+
+MACOS / LINUX
+1. Zainstaluj Node.js 22 LTS (minimum Node.js 20).
+2. Otworz terminal w folderze projektu.
+3. Wykonaj: chmod +x START-FXPULSE-MAC-LINUX.sh
+4. Wykonaj: ./START-FXPULSE-MAC-LINUX.sh
+5. Otworz http://localhost:3000.
+
+BEZ INSTALOWANIA PACZEK NPM
+Projekt korzysta tylko z wbudowanych modulow Node.js. Nie trzeba wykonywac npm install.
+
+KOMENDY RECZNE
+node scripts/setup.mjs
+npm run check
+npm test
+npm run verify:server
+npm start
+
+KONFIGURACJA API
+Pierwszy start tworzy plik .env i losowy FXPULSE_SETUP_TOKEN. Otworz .env w edytorze i skopiuj wartosc FXPULSE_SETUP_TOKEN do kreatora API w aplikacji. Nie wysylaj tego pliku innym osobom i nie umieszczaj go w repozytorium.
+
+DOSTEP Z TELEFONU
+Serwer wypisze adresy LAN, np. http://192.168.1.20:3000. Komputer i telefon musza byc w tej samej sieci Wi-Fi. Jesli Windows Firewall zapyta, zezwol na Node.js w sieci prywatnej.
+UWAGA: zwykly adres LAN HTTP sluzy do podgladu/testow. Instalacja PWA i wysylanie klucza API z telefonu wymagaja HTTPS. Do tego potrzebny jest certyfikat TLS lub zaufany tunel HTTPS.
+
+PORT
+Domyslnie 3000. Mozna ustawic PORT w pliku .env.
+
+DANE
+Domyslny tryb to DEMO. Klucz Twelve Data nie jest potrzebny do startu. Kreator LIVE mozna skonfigurowac pozniej.

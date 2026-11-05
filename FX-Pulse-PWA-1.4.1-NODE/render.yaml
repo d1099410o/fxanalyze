@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: fx-pulse-pwa
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    disk:
+      name: fx-pulse-provider-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: DATA_MODE
+        value: demo
+      - key: TRUST_PROXY
+        value: "true"
+      - key: FXPULSE_SETUP_TOKEN
+        generateValue: true

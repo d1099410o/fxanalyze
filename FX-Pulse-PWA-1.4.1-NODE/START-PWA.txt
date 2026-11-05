@@ -1,0 +1,35 @@
+FX PULSE PWA 1.4.1 — SZYBKI START
+
+To jest wersja WEB/PWA. Nie buduje APK i nie wymaga Android Studio.
+Aby zainstalować na telefonie, aplikacja musi być dostępna pod publicznym adresem HTTPS.
+
+TEST LOKALNY:
+  1. Zainstaluj Node.js 20+ (zalecany 22).
+  2. Otwórz terminal w folderze projektu.
+  3. Uruchom: npm run check
+  4. Uruchom: npm test
+  5. Uruchom: npm start
+  6. Otwórz http://localhost:3000
+
+WDROŻENIE NA WŁASNYM SERWERZE:
+  1. Skopiuj .env.deploy.example do .env.
+  2. Ustaw DOMAIN na domenę wskazującą DNS na serwer.
+  3. Wygeneruj token: node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
+  4. Wklej token jako FXPULSE_SETUP_TOKEN w .env.
+  5. Otwórz porty TCP 80 i TCP/UDP 443 na zaporze.
+  6. Uruchom: docker compose up -d --build
+  Caddy pobierze certyfikat TLS; aplikacja będzie dostępna jako https://DOMAIN.
+
+INSTALACJA ANDROID:
+  1. Otwórz adres HTTPS w Chrome.
+  2. Naciśnij przycisk „Zainstaluj” w FX Pulse.
+  3. Potwierdź instalację lub użyj menu Chrome (⋮) → „Zainstaluj aplikację” / „Dodaj do ekranu głównego”.
+
+INSTALACJA IPHONE:
+  Safari → Udostępnij → Dodaj do ekranu początkowego → Dodaj.
+
+UWAGA:
+  - LIVE i aktualne notowania wymagają połączenia z serwerem.
+  - Klucz Twelve Data oraz token administracyjny pozostają po stronie backendu.
+  - DEMO używa danych syntetycznych i nie wystawia sygnałów transakcyjnych.
+  - To jest aplikacja webowa instalowana z przeglądarki, a nie plik APK.

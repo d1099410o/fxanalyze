@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="FX Pulse" />
+  <meta name="description" content="FX Pulse — sygnały i analiza Forex na interwałach 5, 15 i 30 minut." />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="/styles.css" />
+  <title>FX Pulse — Forex Signals</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="FX Pulse - strona główna">
+        <span class="brand-mark">FX</span>
+        <span><strong>FX PULSE</strong><small>FOREX SIGNAL INTELLIGENCE</small></span>
+      </a>
+      <div class="top-actions">
+        <div class="connection" role="status" aria-live="polite"><i id="connectionDot"></i><span id="connectionText">Łączenie…</span></div>
+        <button id="installBtn" class="install-button" type="button" title="Zainstaluj FX Pulse" aria-label="Zainstaluj FX Pulse"><span aria-hidden="true">↓</span><b>Zainstaluj</b></button>
+        <button id="apiWizardBtn" class="icon-button api-button" type="button" title="Konfiguracja API LIVE" aria-label="Konfiguracja API LIVE">API</button>
+        <button id="notifyBtn" class="icon-button" type="button" title="Włącz powiadomienia" aria-label="Włącz powiadomienia">♢</button>
+      </div>
+    </header>
+    <div id="installToast" class="hidden" role="status" aria-live="polite"></div>
+
+    <main id="top">
+      <section class="hero-row">
+        <div>
+          <p class="eyebrow">INTELIGENTNA ANALIZA RYNKU</p>
+          <h1>Forex signals<span class="accent">.</span></h1>
+          <p class="subhead">Sygnały krótkoterminowe oparte na strukturze ceny i zgodności interwałów.</p>
+        </div>
+        <div class="market-state"><span class="pulse"></span><span id="marketState">Monitorowanie rynku</span></div>
+      </section>
+
+      <section class="control-panel panel">
+        <div class="control-group pair-control">
+          <label for="pairSelect">INSTRUMENT</label>
+          <select id="pairSelect" aria-label="Wybierz parę walutową"></select>
+        </div>
+        <div class="control-group">
+          <label>INTERWAŁ SYGNAŁU</label>
+          <div class="segmented" id="timeframeGroup">
+            <button type="button" class="active" data-timeframe="5m">5 MIN</button>
+            <button type="button" data-timeframe="15m">15 MIN</button>
+            <button type="button" data-timeframe="30m">30 MIN</button>
+          </div>
+        </div>
+        <div class="control-group mode-control">
+          <label for="modeSelect">ŹRÓDŁO DANYCH</label>
+          <select id="modeSelect"><option value="demo">DEMO</option><option value="live">LIVE</option></select>
+        </div>
+        <button id="refreshBtn" class="primary-button" type="button"><span>↻</span> Analizuj</button>
+      </section>
+
+      <div id="demoBanner" class="notice demo-notice"><strong>TRYB DEMO · BRAK HANDLU</strong><span>Świece są syntetyczne i deterministyczne. Aplikacja pokazuje wyłącznie odczyty testowe; nie wystawia sygnałów BUY/SELL do transakcji.</span></div>
+      <div id="errorBanner" class="notice error-notice hidden" role="alert"></div>
+
+      <section class="dashboard-grid">
+        <article class="panel signal-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">AKTUALNY ODCZYT</p><h2 id="selectedPairTitle">EUR/USD <span>· 5m</span></h2></div>
+            <span class="live-label" id="dataLabel" aria-live="polite">DANE SYNTETYCZNE</span>
+          </div>
+          <div class="signal-main">
+            <div id="signalOrb" class="signal-orb wait" role="status" aria-live="polite" aria-label="Wynik analizy"><span id="signalAction">WAIT</span><small>SYGNAŁ</small></div>
+            <div class="signal-info">
+              <div class="confidence-head"><span>OCENA UKŁADU</span><strong id="confidenceValue">—/100</strong></div>
+              <div class="confidence-track"><span id="confidenceBar"></span></div>
+              <p id="signalSummary">Oczekiwanie na dane rynkowe…</p>
+            </div>
+          </div>
+          <div class="price-row">
+            <div><span class="metric-label">OSTATNIA CENA</span><strong id="lastPrice">—</strong></div>
+            <div class="price-time"><span class="metric-label">ŚWIECA</span><strong id="candleTime">—</strong></div>
+          </div>
+          <div class="chart-wrap"><canvas id="priceChart" role="img" aria-label="Wykres cen zamknięcia ostatnich świec"></canvas><div class="chart-legend"><span><i class="legend-line"></i> Cena zamknięcia</span><span id="chartRange">48 świec</span></div></div>
+        </article>
+
+        <article class="panel levels-panel">
+          <div class="panel-heading"><div><p class="eyebrow">PLAN TRANSAKCYJNY</p><h2>Poziomy wejścia</h2></div><span class="risk-tag" id="riskTag">RR CEL 1:1.6</span></div>
+          <div class="level-list">
+            <div class="level-row entry"><span><i></i> Wejście</span><strong id="entryPrice">—</strong></div>
+            <div class="level-row stop"><span><i></i> Stop Loss</span><strong id="stopPrice">—</strong></div>
+            <div class="level-row target"><span><i></i> Take Profit</span><strong id="targetPrice">—</strong></div>
+          </div>
+          <div class="risk-foot"><div><span class="metric-label">RYZYKO (ODL. SL)</span><strong id="stopPips">—</strong></div><div><span class="metric-label">CEL (ODL. TP)</span><strong id="targetPips">—</strong></div></div>
+          <p class="muted-note">Poziomy orientacyjne. Przed transakcją uwzględnij spread, prowizję i poślizg u swojego brokera.</p>
+        </article>
+      </section>
+
+      <section class="lower-grid">
+        <article class="panel indicators-panel">
+          <div class="panel-heading"><div><p class="eyebrow">POTWIERDZENIE TECHNICZNE</p><h2>Wskaźniki</h2></div><span class="mini-caption">OBLICZANE LOKALNIE</span></div>
+          <div class="indicator-grid">
+            <div class="indicator"><span>RSI (14)</span><strong id="rsiValue">—</strong><small id="rsiState">—</small></div>
+            <div class="indicator"><span>ADX (14)</span><strong id="adxValue">—</strong><small id="adxState">—</small></div>
+            <div class="indicator"><span>EMA 9 / 21</span><strong id="emaFastValue">—</strong><small id="emaFastState">—</small></div>
+            <div class="indicator"><span>EMA 50</span><strong id="emaSlowValue">—</strong><small id="emaSlowState">—</small></div>
+            <div class="indicator wide"><span>MACD HISTOGRAM</span><strong id="macdValue">—</strong><small id="macdState">—</small></div>
+          </div>
+        </article>
+
+        <article class="panel mtf-panel">
+          <div class="panel-heading"><div><p class="eyebrow">MULTI-TIMEFRAME</p><h2>Zgodność trendu</h2></div><span class="mini-caption">5M · 15M · 30M</span></div>
+          <div class="mtf-list">
+            <div class="mtf-row"><span>5 minut</span><strong id="mtf5" class="neutral">NEUTRAL</strong></div>
+            <div class="mtf-row"><span>15 minut</span><strong id="mtf15" class="neutral">NEUTRAL</strong></div>
+            <div class="mtf-row"><span>30 minut</span><strong id="mtf30" class="neutral">NEUTRAL</strong></div>
+          </div>
+          <div class="analysis-note"><span class="note-icon">i</span><p id="mtfSummary">Zgodność interwałów pomaga odfiltrować sygnały sprzeczne z szerszym kierunkiem.</p></div>
+        </article>
+      </section>
+
+      <section class="panel reasons-panel">
+        <div class="panel-heading"><div><p class="eyebrow">DLACZEGO TAKI WERDYKT?</p><h2>Uzasadnienie analizy</h2></div><span class="mini-caption" id="updatedAt">—</span></div>
+        <ul id="reasonsList" class="reason-list"><li>Oczekiwanie na pierwszą analizę.</li></ul>
+      </section>
+
+      <section class="disclaimer"><strong>Ważne:</strong> FX Pulse jest narzędziem analitycznym i edukacyjnym, nie doradcą inwestycyjnym. Sygnały nie gwarantują wyniku. Rynek Forex/CFD wiąże się z wysokim ryzykiem straty kapitału. Handel automatyczny i składanie zleceń nie są dostępne.</section>
+    </main>
+    <footer><span>FX PULSE <i>·</i> v1.4.1</span><span>Analiza techniczna · 5m / 15m / 30m · <a href="#" id="footerInstallLink">Zainstaluj aplikację</a></span></footer>
+  </div>
+  <dialog id="installGuide" class="install-dialog" aria-labelledby="installGuideTitle">
+    <section class="install-guide">
+      <div class="api-wizard-head">
+        <div><p class="eyebrow">APLIKACJA NA TWOIM URZĄDZENIU</p><h2 id="installGuideTitle">Zainstaluj FX Pulse</h2></div>
+        <button id="closeInstallGuide" class="icon-button" type="button" aria-label="Zamknij instrukcję">×</button>
+      </div>
+      <p class="install-intro">Dodaj FX Pulse do ekranu głównego. Aplikacja uruchomi się w osobnym oknie, z własną ikoną — bez paska adresu przeglądarki.</p>
+      <div id="installGuideSteps" class="install-steps" aria-live="polite"></div>
+      <div id="installPrerequisites" class="install-prerequisites"></div>
+      <button id="installGuideAction" class="primary-button install-guide-action" type="button">Rozumiem</button>
+    </section>
+  </dialog>
+  <dialog id="apiWizard" class="api-dialog" aria-labelledby="apiWizardTitle">
+    <form id="apiWizardForm" class="api-wizard" novalidate>
+      <div class="api-wizard-head">
+        <div><p class="eyebrow">KREATOR POŁĄCZENIA · KROK 1/2</p><h2 id="apiWizardTitle">Połącz dane LIVE</h2></div>
+        <button id="closeApiWizard" class="icon-button" type="button" aria-label="Zamknij kreator">×</button>
+      </div>
+      <p class="api-wizard-intro">Połącz FX Pulse z dostawcą notowań. Klucz zostanie sprawdzony na rzeczywistym żądaniu OHLC, a następnie zapisany na serwerze w postaci zaszyfrowanej.</p>
+      <div class="api-step"><span class="api-step-number">1</span><div><strong>Dostawca danych</strong><small>Aktualnie obsługiwany: Twelve Data</small></div><span class="api-provider-tag">REST · OHLC</span></div>
+      <label class="api-field" for="providerSelect">DOSTAWCA</label>
+      <select id="providerSelect" class="api-input"><option value="twelve-data">Twelve Data — Forex / 5m / 15m / 30m</option></select>
+      <label class="api-field" for="providerApiKey">KLUCZ API TWELVE DATA</label>
+      <input id="providerApiKey" class="api-input" type="password" minlength="8" maxlength="200" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Wklej klucz API" required />
+      <a class="api-help-link" href="https://twelvedata.com/account/api-keys" target="_blank" rel="noopener noreferrer">Otwórz panel kluczy Twelve Data ↗</a>
+      <div class="api-divider"></div>
+      <div class="api-step"><span class="api-step-number">2</span><div><strong>Autoryzacja konfiguracji serwera</strong><small>Token administracyjny służy wyłącznie do zapisu konfiguracji</small></div></div>
+      <label class="api-field" for="setupToken">TOKEN ADMINISTRACYJNY SERWERA</label>
+      <input id="setupToken" class="api-input" type="password" minlength="32" maxlength="512" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="FXPULSE_SETUP_TOKEN z konfiguracji serwera" required />
+      <p class="api-security-note"><strong>Bezpieczeństwo:</strong> klucz dostawcy nie trafia do URL, localStorage ani APK. Jest wysyłany tylko przez HTTPS i szyfrowany na serwerze AES-256-GCM. Nie wpisuj tu tokenu konta brokera.</p>
+      <div id="apiWizardStatus" class="api-wizard-status" role="status" aria-live="polite">Gotowy do sprawdzenia połączenia.</div>
+      <div class="api-wizard-actions">
+        <button id="disconnectApiBtn" class="secondary-button hidden" type="button">Odłącz API</button>
+        <button id="connectApiBtn" class="primary-button" type="submit">Sprawdź i połącz</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
